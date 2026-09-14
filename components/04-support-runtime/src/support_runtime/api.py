@@ -113,7 +113,7 @@ def create_app(runtime: SupportRuntime | None = None) -> Any:
     try:
         from fastapi import Depends, FastAPI, Header, HTTPException, Request, Response
         from fastapi.exceptions import RequestValidationError
-        from fastapi.responses import JSONResponse, StreamingResponse
+        from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
     except ImportError as exc:  # pragma: no cover - deployment dependency check
         raise RuntimeError("install the 'server' dependencies to run the HTTP API") from exc
 
@@ -415,6 +415,12 @@ def create_app(runtime: SupportRuntime | None = None) -> Any:
     @app.get("/version")
     async def version() -> dict[str, str]:
         return service.version()
+
+    @app.get("/metrics")
+    async def metrics() -> PlainTextResponse:
+        return PlainTextResponse(
+            service.metrics.prometheus(), media_type="text/plain; version=0.0.4"
+        )
 
     return app
 

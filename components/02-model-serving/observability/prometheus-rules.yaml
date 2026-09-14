@@ -7,17 +7,14 @@ groups:
         labels: {severity: critical, owner: model-serving}
         annotations:
           summary: model-serving is not ready
-          runbook: components/02-model-serving/docs/runbooks/provider-loading.md
       - alert: ModelServingRepetitionGuard
         expr: increase(model_serving_guard_failures_total{reason="repetition"}[10m]) > 0
         labels: {severity: warning, owner: model-serving}
         annotations:
           summary: model output repetition guard is firing
-          runbook: components/02-model-serving/docs/runbooks/provider-loading.md
       - alert: ModelServingProviderCircuitOpen
         expr: model_serving_circuit_state == 1
         for: 1m
         labels: {severity: critical, owner: model-serving}
         annotations:
           summary: model provider circuit is open
-          runbook: components/02-model-serving/docs/runbooks/provider-loading.md

@@ -9,6 +9,7 @@ from .domain import Evidence, RuntimeEvent, new_id
 from .errors import DependencyUnavailable, NotFoundError, ValidationError
 from .guardrails import SlidingWindowRateLimiter, restricted_request
 from .history import bounded_history
+from .metrics import RuntimeMetrics
 from .providers import ModelProvider, RetrievalProvider
 from .resilience import CircuitBreaker, retry
 from .validation import enforce_explicit_consent, validate_decision, validate_message
@@ -22,12 +23,14 @@ class SupportRuntime:
         retrieval: RetrievalProvider,
         config: RuntimeConfig | None = None,
         limiter: SlidingWindowRateLimiter | None = None,
+        metrics: RuntimeMetrics | None = None,
     ):
         self.repository = repository
         self.model = model
         self.retrieval = retrieval
         self.config = config or RuntimeConfig()
         self.limiter = limiter or SlidingWindowRateLimiter()
+        self.metrics = metrics or RuntimeMetrics()
         self.decision_circuit = CircuitBreaker()
         self.answer_circuit = CircuitBreaker()
         self.rag_circuit = CircuitBreaker()
@@ -200,6 +203,7 @@ class SupportRuntime:
             )
             answer, citations = validate_grounded_answer(raw, result.evidence)
         except ValidationError:
+            self.metrics.citation_failure()
             answer = (
                 "I couldn’t verify a safely cited answer from the available company information."
             )
@@ -233,6 +237,7 @@ class SupportRuntime:
         complaint: dict[str, Any],
     ) -> list[RuntimeEvent]:
         if not enforce_explicit_consent(message, complaint):
+            self.metrics.complaint("confirmation_required")
             complaint = {
                 **complaint,
                 "submission_mode": "confirmation_required",
@@ -264,6 +269,7 @@ class SupportRuntime:
                 2,
             )
         except Exception:
+            self.metrics.complaint("failed")
             return [
                 self._event(
                     "error",
@@ -297,6 +303,7 @@ class SupportRuntime:
                 2,
             )
         except Exception as exc:
+            self.metrics.complaint("failed")
             self.repository.preserve_failed_draft(draft_id)
             raise DependencyUnavailable(
                 "complaint was not submitted; the confirmed draft is preserved for retry"
@@ -305,6 +312,7 @@ class SupportRuntime:
         # recompute the same idempotency key and return the existing complaint.
         # PostgreSQL/SQLite complaint uniqueness makes the retry auditable and
         # prevents a second manager-queue item.
+        self.metrics.complaint("submitted")
         return result
 
     def delete_draft(
@@ -349,6 +357,7 @@ class SupportRuntime:
             self._event("token", request_id, {"text": answer[start : start + 96]})
             for start in range(0, len(answer), 96)
         ]
+        self.metrics.complaint("submitted")
         return [
             *token_events,
             self._event(
@@ -377,6 +386,7 @@ class SupportRuntime:
 
     def ready(self) -> dict[str, Any]:
         database_ready = bool(self.repository.ready())
+        self.metrics.readiness(database_ready)
         redis_ready = True
         redis_probe = getattr(self.limiter, "ready", None)
         if callable(redis_probe):
