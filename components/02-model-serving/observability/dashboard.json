@@ -1,0 +1,12 @@
+{
+  "title": "Model serving",
+  "tags": ["model-serving", "owner:model-serving"],
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {"type": "stat", "title": "Readiness", "targets": [{"expr": "model_serving_ready"}]},
+    {"type": "timeseries", "title": "Generation duration", "targets": [{"expr": "rate(model_serving_generation_duration_seconds_sum[5m]) / rate(model_serving_generation_duration_seconds_count[5m])"}]},
+    {"type": "timeseries", "title": "Time to first token", "targets": [{"expr": "histogram_quantile(0.95, rate(model_serving_time_to_first_token_seconds_bucket[5m]))"}]},
+    {"type": "timeseries", "title": "Queue depth", "targets": [{"expr": "model_serving_queue_depth"}]}
+  ]
+}

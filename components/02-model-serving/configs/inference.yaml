@@ -1,0 +1,8 @@
+{
+  "enable_thinking": false, "temperature": 0.7, "top_k": 20, "top_p": 0.8,
+  "min_p": 0.0, "max_new_tokens": 1024, "repetition_penalty": 1.0,
+  "stop_sequences": ["<|im_end|>"], "prompt_token_limit": 7168,
+  "reserved_completion_tokens": 1024, "request_timeout_seconds": 30,
+  "max_concurrent_requests_per_replica": 16, "rate_limit_requests_per_window": 60,
+  "rate_limit_window_seconds": 60, "rate_limit_max_keys": 10000
+}

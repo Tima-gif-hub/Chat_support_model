@@ -1,0 +1,9 @@
+{
+  "base_model": "Qwen/Qwen3-4B", "base_model_revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+  "method": "qlora_sft", "seed": 42, "max_sequence_length": 4096, "packing": true,
+  "train_on_assistant_only": true, "append_eos_token": true,
+  "quantization": {"load_in_4bit": true, "quant_type": "nf4", "double_quantization": true, "compute_dtype": "bfloat16"},
+  "lora": {"rank": 16, "alpha": 32, "dropout": 0.05, "bias": "none", "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]},
+  "optimization": {"epochs": 2, "learning_rate": 0.0002, "micro_batch_size": 2, "gradient_accumulation_steps": 16, "effective_batch_size_per_replica": 32, "optimizer": "paged_adamw_8bit", "scheduler": "cosine", "warmup_ratio": 0.03, "weight_decay": 0.01, "max_grad_norm": 0.3, "gradient_checkpointing": true, "bf16": true, "fp16": false},
+  "evaluation": {"strategy": "steps", "eval_steps": 100, "save_steps": 100, "logging_steps": 10, "save_total_limit": 3, "load_best_model_at_end": true, "selection_metric": "eval_loss", "greater_is_better": false, "early_stopping_patience": 2}
+}

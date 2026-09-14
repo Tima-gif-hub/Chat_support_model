@@ -1,0 +1,2 @@
+<|im_start|>{role}
+{content}<|im_end|>
