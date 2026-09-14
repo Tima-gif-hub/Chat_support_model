@@ -78,7 +78,7 @@ class PostgresIndexStore:
                 for document in documents:
                     cursor.execute(
                         "INSERT INTO rag.documents "
-                        "(index_version,document_id,workspace_id,title,document_type,source_uri,language,audience," 
+                        "(index_version,document_id,workspace_id,title,document_type,source_uri,language,audience,"
                         "effective_from,effective_to,updated_at,content_sha256) "
                         "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                         (
