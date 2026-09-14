@@ -14,11 +14,12 @@ def tokenize(text: str) -> list[str]:
 class DeterministicEmbedding:
     """Offline 768-D feature-hash adapter used only by the public demo.
 
-    Production uses separately pinned BGE weights. Naming this adapter explicitly prevents a
-    local synthetic retrieval result from being mistaken for a BGE measurement.
+    Production uses separately pinned BGE weights. The manifest records that production
+    contract identity while the public process uses this local adapter, so synthetic retrieval
+    results cannot be mistaken for BGE measurements.
     """
 
-    model_name = "deterministic-feature-hash-768"
+    model_name = "BAAI/bge-base-en-v1.5"
     revision = "local-v1"
 
     def __init__(self, dimensions: int = 768, max_tokens: int = 512) -> None:
