@@ -1,0 +1,14 @@
+{
+  "name": "@furniture-support/customer-chat",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/smoke.test.mjs",
+    "test:ui": "playwright test",
+    "serve": "npx serve src -l 4173"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.0"
+  }
+}

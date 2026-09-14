@@ -1,0 +1,7 @@
+groups:
+  - name: model-serving-shared
+    rules:
+      - alert: ModelServingUnavailable
+        expr: up{job="model-serving"} == 0
+        for: 2m
+        labels: {severity: critical, owner: model-serving}

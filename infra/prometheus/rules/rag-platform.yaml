@@ -1,0 +1,7 @@
+groups:
+  - name: rag-platform-shared
+    rules:
+      - alert: RagPlatformUnavailable
+        expr: up{job="rag-platform"} == 0
+        for: 2m
+        labels: {severity: critical, owner: rag-platform}

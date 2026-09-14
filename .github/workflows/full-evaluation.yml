@@ -1,0 +1,37 @@
+name: full-evaluation
+
+on:
+  pull_request:
+    paths:
+      - "components/01-model-preparation/fixtures/evaluation/**"
+      - "components/03-rag-platform/fixtures/evaluation/**"
+      - "components/03-rag-platform/fixtures/knowledge-base/**"
+      - "components/04-support-runtime/fixtures/evaluation/**"
+      - "tests/system/fixtures/**"
+      - "scripts/evaluate.py"
+      - "scripts/verify_contracts.py"
+      - "packages/python-contracts/**"
+      - "contracts/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/full-evaluation.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -e ".[dev,server]"
+      - run: python -m ruff check scripts packages/python-contracts tests/contract tests/system
+      - run: python -m mypy packages/python-contracts
+      - run: python -m pytest tests/contract tests/system -q
+      - run: python scripts/verify_contracts.py
+      - run: python scripts/evaluate.py --suite public-synthetic-300 --model-manifest "${{ vars.MODEL_MANIFEST || '' }}"

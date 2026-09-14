@@ -1,0 +1,39 @@
+name: frontends
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/typescript-contracts/**"
+      - "package.json"
+      - ".github/workflows/frontends.yml"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install customer app dependencies
+        working-directory: apps/customer-chat
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install manager app dependencies
+        working-directory: apps/manager-console
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run contract:test
+      - run: npm run typecheck
+      - run: npm run frontend:test
+      - name: Install Playwright browser
+        working-directory: apps/customer-chat
+        run: npx playwright install --with-deps chromium
+      - name: Run customer Playwright checks
+        working-directory: apps/customer-chat
+        run: npm run test:ui
+      - name: Run manager Playwright checks
+        working-directory: apps/manager-console
+        run: npm run test:ui
+      - run: docker build -t customer-chat:${{ github.sha }} apps/customer-chat
+      - run: docker build -t manager-console:${{ github.sha }} apps/manager-console

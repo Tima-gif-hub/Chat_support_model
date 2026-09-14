@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Manager complaint queue for the Anonymous Furniture Company public implementation.">
+  <title>Complaint queue | Anonymous Furniture Company</title>
+  <link rel="stylesheet" href="/manager/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#queue">Skip to complaint queue</a>
+  <header class="app-header">
+    <a class="wordmark" href="/" aria-label="Anonymous Furniture Company home">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h16M6 9V6h12v3M6 9v9m12-9v9M4 14h16"/></svg></span>
+      <span>Anonymous Furniture Company</span>
+    </a>
+    <div class="header-context"><span>Manager console</span><span class="portfolio-label">Public portfolio interface</span></div>
+  </header>
+
+  <section class="manager-login" id="login-panel" aria-labelledby="login-heading" hidden>
+    <p class="section-label">Protected manager access</p>
+    <h1 id="login-heading">Sign in to the complaint queue</h1>
+    <form id="login-form">
+      <label for="manager-email">Email</label>
+      <input id="manager-email" name="email" type="email" autocomplete="username" required>
+      <label for="manager-password">Password</label>
+      <input id="manager-password" name="password" type="password" autocomplete="current-password" required>
+      <button class="button primary" type="submit">Sign in</button>
+      <p id="login-error" class="error-banner" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <main id="manager-app">
+    <section class="queue-heading">
+      <div>
+        <p class="section-label">Complaint operations</p>
+        <h1>Manager queue</h1>
+        <p>Review consented complaints, record internal context, and close the loop.</p>
+      </div>
+      <dl class="queue-summary" aria-label="Queue summary">
+        <div><dt>Open</dt><dd id="open-count">3</dd></div>
+        <div><dt>Oldest</dt><dd>42 min</dd></div>
+        <div><dt>Updated</dt><dd>Now</dd></div>
+      </dl>
+    </section>
+
+    <section class="queue-tools" aria-label="Queue filters">
+      <label>Search complaints
+        <input id="search" type="search" placeholder="Reference or conversation text">
+      </label>
+      <label>Status
+        <select id="status-filter">
+          <option value="open">Open</option>
+          <option value="all">All statuses</option>
+          <option value="queued">Queued</option>
+          <option value="acknowledged">Acknowledged</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </label>
+      <label>Subtype
+        <select id="subtype-filter">
+          <option value="all">All subtypes</option>
+          <option value="delivery_damage">Delivery damage</option>
+          <option value="missing_item_or_part">Missing item or part</option>
+          <option value="delivery_delay">Delivery delay</option>
+          <option value="product_quality">Product quality</option>
+        </select>
+      </label>
+    </section>
+
+    <div class="workspace" id="queue">
+      <section class="queue-list" aria-label="Complaints">
+        <div class="list-heading"><span>Priority order</span><span id="result-count">3 complaints</span></div>
+        <ol id="complaint-list"></ol>
+        <p class="empty-state" id="empty-state" hidden>No complaints match these filters.</p>
+      </section>
+
+      <section class="complaint-detail" id="complaint-detail" aria-live="polite" tabindex="-1">
+        <div class="detail-empty">Select a complaint to review its history and actions.</div>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="/manager/app.mjs"></script>
+</body>
+</html>

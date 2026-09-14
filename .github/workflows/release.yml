@@ -1,0 +1,53 @@
+name: release
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*.*.*"]
+
+jobs:
+  release-gates:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_PROJECT_NAME: ci-release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python -m pip install -e ".[dev,server]"
+      - name: Install frontend dependencies
+        working-directory: apps/customer-chat
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Install manager dependencies
+        working-directory: apps/manager-console
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: python -m ruff check scripts packages/python-contracts tests/contract tests/system
+      - run: python -m mypy packages/python-contracts
+      - run: python -m pytest -q
+      - run: npm run contract:test
+      - run: npm run typecheck
+      - run: npm run frontend:test
+      - name: Install Playwright browser
+        working-directory: apps/customer-chat
+        run: npx playwright install --with-deps chromium
+      - name: Run customer Playwright checks
+        working-directory: apps/customer-chat
+        run: npm run test:ui
+      - name: Run manager Playwright checks
+        working-directory: apps/manager-console
+        run: npm run test:ui
+      - run: python scripts/verify_contracts.py
+      - run: python scripts/hygiene.py
+      - run: python scripts/evaluate.py --suite public-synthetic-300 --model-manifest "${{ vars.MODEL_MANIFEST || '' }}" --require-production-provider
+      - run: docker compose config --quiet
+      - run: docker compose up -d --build gateway runtime-api rag-api model-mock
+      - name: Run release HTTP smoke through the gateway
+        run: docker compose run --rm --no-deps -e RUNTIME_URL=http://gateway:8080 -e PUBLIC_URL=http://gateway:8080 -e RAG_URL=http://rag-api:8080 -e MODEL_URL=http://model-mock:8000 smoke
+      - name: Tear down release stack
+        if: ${{ always() }}
+        run: docker compose down --volumes --remove-orphans

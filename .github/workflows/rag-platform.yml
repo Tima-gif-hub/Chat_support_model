@@ -1,0 +1,29 @@
+name: rag-platform
+
+on:
+  pull_request:
+    paths:
+      - "components/03-rag-platform/**"
+      - "packages/python-contracts/**"
+      - "contracts/retrieval.openapi.yaml"
+      - "contracts/rag-index-manifest.schema.json"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/rag-platform.yml"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev,server]"
+      - run: python -m ruff check components/03-rag-platform/src components/03-rag-platform/tests
+      - run: python -m mypy components/03-rag-platform/src --ignore-missing-imports --follow-imports=skip
+      - run: python -m pytest components/03-rag-platform/tests -q
+      - run: python components/03-rag-platform/src/rag_platform/evaluation.py components/03-rag-platform/fixtures/knowledge-base components/03-rag-platform/fixtures/evaluation/retrieval-golden-v1.jsonl
+      - run: docker build -t rag-platform:${{ github.sha }} components/03-rag-platform

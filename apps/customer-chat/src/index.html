@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Public portfolio customer-support interface for Anonymous Furniture Company.">
+  <title>Support | Anonymous Furniture Company</title>
+  <link rel="stylesheet" href="/customer/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#conversation">Skip to conversation</a>
+  <header class="site-header">
+    <a class="wordmark" href="/" aria-label="Anonymous Furniture Company home">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h16M6 9V6h12v3M6 9v9m12-9v9M4 14h16"/></svg></span>
+      <span>Anonymous Furniture Company</span>
+    </a>
+    <span class="portfolio-label">Public portfolio interface</span>
+  </header>
+
+  <main class="chat-shell" id="conversation">
+    <section class="conversation-panel" aria-label="Support conversation">
+      <div class="conversation-bar">
+        <div>
+          <span class="presence" aria-hidden="true"></span>
+          <strong>AI CS Assistant (Beta)</strong>
+        </div>
+      </div>
+      <div class="demo-toolbar">
+        <label class="fixture-control">Demo state
+          <select id="fixture-select">
+            <option value="catalog">Catalog answer</option>
+            <option value="abstention">Insufficient evidence</option>
+            <option value="confirmation">Complaint confirmation</option>
+            <option value="submitted">Complaint submitted</option>
+            <option value="degraded">Service unavailable</option>
+          </select>
+        </label>
+      </div>
+
+      <ol class="messages" id="messages" aria-live="polite" aria-relevant="additions text"></ol>
+
+      <div class="runtime-status" id="runtime-status" role="status" aria-live="polite" hidden>
+        <span class="status-pulse" aria-hidden="true"></span>
+        <span>checking company information</span>
+      </div>
+
+      <form class="composer" id="message-form">
+        <label for="message-input">Message</label>
+        <div class="composer-row">
+          <textarea id="message-input" name="message" rows="1" maxlength="8000" placeholder="Ask a question or describe a problem" required aria-describedby="composer-help"></textarea>
+          <button class="send-button" type="submit">
+            <span>Send</span>
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 14-7-5 14-2-6-7-1Z"/></svg>
+          </button>
+        </div>
+        <p id="composer-help">Do not include payment details or sensitive personal information.</p>
+      </form>
+    </section>
+  </main>
+
+  <template id="citation-template">
+    <li class="citation-item">
+      <button type="button" class="citation-chip" aria-expanded="false"></button>
+      <div class="citation-detail" hidden></div>
+    </li>
+  </template>
+  <script type="module" src="/customer/app.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+services:
+  gateway:
+    build: .
+    command: ["python", "infra/gateway/server.py"]
+    environment:
+      RUNTIME_URL: http://runtime-api:8000
+      CUSTOMER_URL: http://customer-chat:8080
+      MANAGER_URL: http://manager-console:8080
+    ports: ["80:8080"]
+    depends_on:
+      runtime-api: {condition: service_healthy}
+      customer-chat: {condition: service_healthy}
+      manager-console: {condition: service_healthy}
+  customer-chat:
+    build: ./apps/customer-chat
+    expose: ["8080"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/customer/"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+  manager-console:
+    build: ./apps/manager-console
+    expose: ["8080"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/manager/"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+  runtime-api:
+    build: ./components/04-support-runtime
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      RAG_BASE_URL: http://rag-api:8080
+      MODEL_BASE_URL: http://model-mock:8000
+      DATABASE_URL: postgresql://runtime_app:local-runtime@postgres:5432/furniture_support
+      REDIS_URL: redis://redis:6379/0
+      APP_ENV: local
+      SESSION_SECRET: local-only-change-me
+      MANAGER_EMAIL: manager@example.test
+      MANAGER_PASSWORD: portfolio-manager
+      MODEL_VERSION: mock-1.0.0
+      INDEX_VERSION: idx_2026_09_12_001
+    expose: ["8000"]
+    depends_on:
+      rag-api: {condition: service_healthy}
+      model-mock: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+  rag-api:
+    build: ./components/03-rag-platform
+    environment:
+      HOST: 0.0.0.0
+      RAG_INDEX_VERSION: idx_2026_09_12_001
+      RAG_DATABASE_URL: postgresql://rag_reader_app:local-rag-reader@postgres:5432/furniture_support
+    expose: ["8080"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      rag-index: {condition: service_completed_successfully}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+  model-mock:
+    build: ./components/02-model-serving
+    environment:
+      HOST: 0.0.0.0
+      MODEL_PROVIDER: mock
+      MODEL_VERSION: mock-1.0.0
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: furniture_support
+      POSTGRES_USER: support_app
+      POSTGRES_PASSWORD: local-only
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/00-init.sql:ro
+      - ./components/03-rag-platform/migrations/001_rag_schema.sql:/docker-entrypoint-initdb.d/10-rag-schema.sql:ro
+      - ./components/03-rag-platform/migrations/002_least_privilege.sql:/docker-entrypoint-initdb.d/11-rag-permissions.sql:ro
+      - ./components/04-support-runtime/migrations/001_runtime.sql:/docker-entrypoint-initdb.d/20-runtime.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U support_app -d furniture_support"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  rag-index:
+    build: ./components/03-rag-platform
+    command: ["python", "-m", "rag_platform.seed"]
+    environment:
+      RAG_DATABASE_URL: postgresql://rag_ingestor_app:local-rag-writer@postgres:5432/furniture_support
+      RAG_INDEX_VERSION: idx_2026_09_12_001
+      RAG_CONFIG_PATH: /app/configs/rag.toml
+      GIT_SHA: local-demo
+    depends_on:
+      postgres: {condition: service_healthy}
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  seed:
+    profiles: ["tools"]
+    build: .
+    command: ["python", "scripts/seed.py"]
+    environment:
+      RAG_URL: http://rag-api:8080
+      RUNTIME_URL: http://runtime-api:8000
+    depends_on:
+      runtime-api: {condition: service_healthy}
+      rag-api: {condition: service_healthy}
+  smoke:
+    profiles: ["tools"]
+    build: .
+    command: ["python", "scripts/system_smoke.py"]
+    environment:
+      RUNTIME_URL: http://gateway:8080
+      PUBLIC_URL: http://gateway:8080
+      RAG_URL: http://rag-api:8080
+      MODEL_URL: http://model-mock:8000
+    depends_on:
+      gateway: {condition: service_started}
+      runtime-api: {condition: service_healthy}
+      rag-api: {condition: service_healthy}
+      model-mock: {condition: service_healthy}
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    profiles: ["observability"]
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/prometheus/rules:/etc/prometheus/rules:ro
+    ports: ["9090:9090"]
+    depends_on:
+      runtime-api: {condition: service_healthy}
+      rag-api: {condition: service_healthy}
+      model-mock: {condition: service_healthy}
+  tempo:
+    image: grafana/tempo:2.6.0
+    profiles: ["observability"]
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./infra/tempo/tempo.yaml:/etc/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    expose: ["3200", "4317", "4318"]
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.110.0
+    profiles: ["observability"]
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/otel/otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    expose: ["4317", "4318", "9464"]
+    depends_on:
+      tempo: {condition: service_started}
+  grafana:
+    image: grafana/grafana:11.2.0
+    profiles: ["observability"]
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    depends_on:
+      prometheus: {condition: service_started}
+      tempo: {condition: service_started}
+
+volumes:
+  postgres-data:
+  tempo-data:

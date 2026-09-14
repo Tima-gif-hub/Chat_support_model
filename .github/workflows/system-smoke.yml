@@ -1,0 +1,43 @@
+name: system-smoke
+
+on:
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "docker-compose*.yml"
+      - "infra/**"
+      - "scripts/**"
+      - "tests/system/**"
+      - "apps/**"
+      - "packages/**"
+      - "components/02-model-serving/**"
+      - "components/03-rag-platform/**"
+      - "components/04-support-runtime/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/system-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    env:
+      COMPOSE_PROJECT_NAME: ci-system-smoke
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev,server]"
+      - run: python -m ruff check scripts packages/python-contracts tests/contract tests/system
+      - run: python -m pytest tests/contract tests/system -q
+      - run: python scripts/verify_contracts.py
+      - run: docker compose config --quiet
+      - name: Build and start the HTTP stack
+        run: docker compose up -d --build gateway runtime-api rag-api model-mock
+      - name: Run strict gateway HTTP smoke
+        run: docker compose run --rm --no-deps -e RUNTIME_URL=http://gateway:8080 -e PUBLIC_URL=http://gateway:8080 -e RAG_URL=http://rag-api:8080 -e MODEL_URL=http://model-mock:8000 smoke
+      - name: Tear down the HTTP stack
+        if: ${{ always() }}
+        run: docker compose down --volumes --remove-orphans

@@ -1,0 +1,44 @@
+services:
+  model-mock:
+    # Keep the repository-owned API/manifest/readiness boundary in front of
+    # vLLM; only its provider changes in this optional overlay.
+    environment:
+      MODEL_PROVIDER: vllm
+      MODEL_ENDPOINT: http://vllm-engine:8000
+      MODEL_NAME: ${MODEL_VERSION:-approved-gpu}
+      MODEL_VERSION: ${MODEL_VERSION:-approved-gpu}
+      MODEL_CONFIG_PATH: /app/configs/inference.yaml
+      MODEL_MANIFEST_PATH: /models/adapter/model-manifest.json
+    volumes:
+      - ${MODEL_ADAPTER_DIR:-./artifacts/model}:/models/adapter:ro
+    depends_on:
+      vllm-engine: {condition: service_healthy}
+
+  vllm-engine:
+    image: ${VLLM_IMAGE:?Set VLLM_IMAGE to an immutable vLLM image digest}
+    command:
+      - --model
+      - ${MODEL_BASE_ARTIFACT_URI:?Set MODEL_BASE_ARTIFACT_URI to an approved Qwen3-4B artifact}
+      - --enable-lora
+      - --lora-modules
+      - ${MODEL_VERSION:-approved-gpu}=${MODEL_ADAPTER_URI:-/models/adapter/adapter}
+      - --max-model-len
+      - "8192"
+      - --dtype
+      - bfloat16
+    volumes:
+      - ${MODEL_ADAPTER_DIR:-./artifacts/model}:/models/adapter:ro
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
+      interval: 15s
+      timeout: 3s
+      retries: 20
+      start_period: 60s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

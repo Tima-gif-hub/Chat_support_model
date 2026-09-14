@@ -1,0 +1,30 @@
+schema_version: "1.0"
+suite: public-synthetic-300
+seed: 42
+owners:
+  - path: components/01-model-preparation/fixtures/evaluation/decision-cases-v1.jsonl
+    fixture_version: decision-behavior-v1
+    scenario: decision-behavior
+    cases: 70
+    components: [01-model-preparation]
+  - path: components/03-rag-platform/fixtures/evaluation/retrieval-golden-v1.jsonl
+    fixture_version: rag-retrieval-v1
+    scenario: retrieval-only
+    cases: 60
+    components: [03-rag-platform]
+  - path: components/04-support-runtime/fixtures/evaluation/runtime-cases.jsonl
+    fixture_version: runtime-guardrails-v1
+    scenario: runtime-guardrails-and-complaints
+    cases: 75
+    components: [04-support-runtime]
+  - path: tests/system/fixtures/grounded-answers.jsonl
+    fixture_version: system-grounded-v1
+    scenario: grounded-answers-with-citations
+    cases: 80
+    components: [03-rag-platform, 04-support-runtime]
+  - path: tests/system/fixtures/dependency-failures.jsonl
+    fixture_version: system-failures-v1
+    scenario: dependency-failure-behavior
+    cases: 15
+    components: [02-model-serving, 03-rag-platform, 04-support-runtime]
+total_cases: 300

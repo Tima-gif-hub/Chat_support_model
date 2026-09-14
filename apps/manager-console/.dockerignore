@@ -1,0 +1,17 @@
+.git
+.work
+.docx-review
+artifacts
+.venv
+venv
+node_modules
+test-results
+playwright-report
+coverage
+dist
+build
+.env
+*.log
+*.tmp
+*.bak
+*.orig

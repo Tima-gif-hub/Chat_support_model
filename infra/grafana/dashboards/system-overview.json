@@ -1,0 +1,12 @@
+{
+  "title": "Customer support system overview",
+  "tags": ["system", "owner:platform"],
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {"type": "stat", "title": "Model serving readiness", "targets": [{"expr": "model_serving_ready"}]},
+    {"type": "stat", "title": "Active RAG index", "targets": [{"expr": "rag_index_info"}]},
+    {"type": "timeseries", "title": "RAG p95 latency", "targets": [{"expr": "histogram_quantile(0.95, rate(rag_retrieval_duration_seconds_bucket[5m]))"}]},
+    {"type": "timeseries", "title": "Model p95 TTFT", "targets": [{"expr": "histogram_quantile(0.95, rate(model_serving_time_to_first_token_seconds_bucket[5m]))"}]}
+  ]
+}

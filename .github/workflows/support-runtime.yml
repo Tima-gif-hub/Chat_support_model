@@ -1,0 +1,32 @@
+name: support-runtime
+
+on:
+  pull_request:
+    paths:
+      - "components/04-support-runtime/**"
+      - "packages/python-contracts/**"
+      - "contracts/chat.openapi.yaml"
+      - "contracts/complaint.schema.json"
+      - "contracts/decision.schema.json"
+      - "contracts/events/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/support-runtime.yml"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e ".[dev,server]"
+      - run: python -m ruff check components/04-support-runtime/src components/04-support-runtime/tests
+      - name: Typecheck runtime implementation
+        run: python -m mypy components/04-support-runtime/src --ignore-missing-imports --disable-error-code=arg-type
+      - run: python -m pytest components/04-support-runtime/tests -q
+      - run: python components/04-support-runtime/scripts/evaluate.py
+      - run: docker build -t support-runtime:${{ github.sha }} components/04-support-runtime
