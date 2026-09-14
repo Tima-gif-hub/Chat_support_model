@@ -1,0 +1,389 @@
+openapi: 3.1.0
+info:
+  title: Anonymous Furniture Company support runtime API
+  version: 1.0.0
+  description: Versioned customer and manager API. Message responses are Server-Sent Events.
+servers:
+  - url: http://localhost
+tags:
+  - name: customer
+  - name: manager
+  - name: health
+paths:
+  /api/v1/conversations:
+    post:
+      tags: [customer]
+      operationId: createConversation
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CreateConversationRequest'}
+      responses:
+        '201':
+          description: New anonymous conversation
+          content: {application/json: {schema: {$ref: '#/components/schemas/Conversation'}}}
+        '422': {$ref: '#/components/responses/ValidationError'}
+  /api/v1/manager/session:
+    post:
+      tags: [manager]
+      operationId: managerLogin
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ManagerLoginRequest'}}}
+      responses:
+        '200':
+          description: Signed HTTP-only manager session was created
+          content: {application/json: {schema: {$ref: '#/components/schemas/ManagerSession'}}}
+          headers:
+            Set-Cookie: {schema: {type: string}}
+        '401': {$ref: '#/components/responses/UnauthenticatedError'}
+        '422': {$ref: '#/components/responses/ValidationError'}
+    get:
+      tags: [manager]
+      operationId: getManagerSession
+      responses:
+        '200':
+          description: Current manager session
+          content: {application/json: {schema: {$ref: '#/components/schemas/ManagerSession'}}}
+        '401': {$ref: '#/components/responses/UnauthenticatedError'}
+    delete:
+      tags: [manager]
+      operationId: logoutManager
+      responses:
+        '204': {description: Signed manager session deleted}
+  /api/v1/seed:
+    post:
+      tags: [health]
+      operationId: seedRuntimeFixtures
+      responses:
+        '200':
+          description: Idempotent fixture seed check
+          content: {application/json: {schema: {$ref: '#/components/schemas/SeedResponse'}}}
+        '503': {$ref: '#/components/responses/DependencyError'}
+  /api/v1/conversations/{conversation_id}:
+    parameters: [{ $ref: '#/components/parameters/ConversationId' }]
+    get:
+      tags: [customer]
+      operationId: getConversation
+      responses:
+        '200':
+          description: Conversation and bounded history
+          content: {application/json: {schema: {$ref: '#/components/schemas/Conversation'}}}
+        '404': {$ref: '#/components/responses/NotFoundError'}
+  /api/v1/conversations/{conversation_id}/messages:
+    parameters: [{ $ref: '#/components/parameters/ConversationId' }]
+    post:
+      tags: [customer]
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/SendMessageRequest'}}}
+      responses:
+        '200':
+          description: Ordered runtime events in SSE format
+          headers:
+            Cache-Control: {schema: {type: string}}
+            X-Request-ID: {schema: {type: string}}
+          content: {text/event-stream: {schema: {type: string, description: Each SSE data field is a RuntimeEvent JSON object.}}}
+        '400': {$ref: '#/components/responses/ValidationError'}
+        '429': {$ref: '#/components/responses/RateLimitError'}
+        '503': {$ref: '#/components/responses/DependencyError'}
+  /api/v1/conversations/{conversation_id}/events:
+    parameters: [{ $ref: '#/components/parameters/ConversationId' }]
+    get:
+      tags: [customer]
+      operationId: replayConversationEvents
+      parameters:
+        - in: query
+          name: last_event_id
+          schema: {type: integer, minimum: 0, default: 0}
+        - in: header
+          name: Last-Event-ID
+          schema: {type: integer, minimum: 0}
+      responses:
+        '200':
+          description: Events after the requested monotonic cursor
+          content: {text/event-stream: {schema: {type: string}}}
+        '404': {$ref: '#/components/responses/NotFoundError'}
+  /api/v1/conversations/{conversation_id}/complaints/{draft_id}/confirm:
+    parameters:
+      - {$ref: '#/components/parameters/ConversationId'}
+      - {$ref: '#/components/parameters/DraftId'}
+    post:
+      tags: [customer]
+      operationId: confirmComplaint
+      requestBody:
+        required: false
+        content: {application/json: {schema: {type: object, additionalProperties: false}}}
+      responses:
+        '200':
+          description: Queued complaint (or an idempotent duplicate)
+          content: {application/json: {schema: {$ref: '#/components/schemas/ComplaintSubmission'}}}
+        '404': {$ref: '#/components/responses/NotFoundError'}
+        '503': {$ref: '#/components/responses/DependencyError'}
+  /api/v1/conversations/{conversation_id}/complaints/{draft_id}:
+    parameters:
+      - {$ref: '#/components/parameters/ConversationId'}
+      - {$ref: '#/components/parameters/DraftId'}
+    delete:
+      tags: [customer]
+      operationId: deleteComplaintDraft
+      responses:
+        '204': {description: Draft deleted without a submission}
+        '404': {$ref: '#/components/responses/NotFoundError'}
+  /api/v1/messages/{message_id}/feedback:
+    parameters:
+      - in: path
+        name: message_id
+        required: true
+        schema: {type: string, pattern: '^msg_[A-Za-z0-9-]{8,}$'}
+    post:
+      tags: [customer]
+      operationId: recordMessageFeedback
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/FeedbackRequest'}}}
+      responses:
+        '201':
+          description: Stored feedback
+          content: {application/json: {schema: {$ref: '#/components/schemas/Feedback'}}}
+        '409': {$ref: '#/components/responses/ConflictError'}
+  /api/v1/manager/complaints:
+    get:
+      tags: [manager]
+      operationId: listComplaints
+      security:
+        - managerSession: []
+        - managerBearer: []
+      parameters:
+        - in: query
+          name: status
+          schema: {type: string, enum: [queued, acknowledged, resolved, failed]}
+        - in: query
+          name: limit
+          schema: {type: integer, minimum: 1, maximum: 100, default: 100}
+      responses:
+        '200':
+          description: Manager complaint queue
+          content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Complaint'}}}}
+        '403': {$ref: '#/components/responses/ForbiddenError'}
+  /api/v1/manager/complaints/{complaint_id}:
+    parameters:
+      - in: path
+        name: complaint_id
+        required: true
+        schema: {type: string, pattern: '^cmp_[A-Za-z0-9-]{8,}$'}
+    patch:
+      tags: [manager]
+      operationId: updateComplaint
+      security:
+        - managerSession: []
+        - managerBearer: []
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ComplaintUpdateRequest'}}}
+      responses:
+        '200':
+          description: Updated complaint
+          content: {application/json: {schema: {$ref: '#/components/schemas/Complaint'}}}
+        '403': {$ref: '#/components/responses/ForbiddenError'}
+        '409': {$ref: '#/components/responses/ConflictError'}
+  /health/live:
+    get:
+      tags: [health]
+      operationId: runtimeLiveness
+      responses:
+        '200':
+          description: Process is alive
+          content: {application/json: {schema: {$ref: '#/components/schemas/LiveResponse'}}}
+  /health/ready:
+    get:
+      tags: [health]
+      operationId: runtimeReadiness
+      responses:
+        '200':
+          description: Runtime and dependencies are ready
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReadyResponse'}}}
+        '503':
+          description: Dependency is not ready
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReadyResponse'}}}
+  /version:
+    get:
+      tags: [health]
+      operationId: runtimeVersion
+      responses:
+        '200':
+          description: Runtime identity and consumed model/index versions
+          content: {application/json: {schema: {$ref: '#/components/schemas/RuntimeVersion'}}}
+components:
+  securitySchemes:
+    managerBearer: {type: http, scheme: bearer}
+    managerSession: {type: apiKey, in: cookie, name: support_manager_session}
+  parameters:
+    ConversationId:
+      in: path
+      name: conversation_id
+      required: true
+      schema: {type: string, pattern: '^cnv_[A-Za-z0-9-]{8,}$'}
+    DraftId:
+      in: path
+      name: draft_id
+      required: true
+      schema: {type: string, pattern: '^drf_[A-Za-z0-9-]{8,}$'}
+  responses:
+    ValidationError:
+      description: Request validation failed
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    NotFoundError:
+      description: Resource not found
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    ConflictError:
+      description: Optimistic concurrency or idempotency conflict
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    ForbiddenError:
+      description: Manager authorization failed
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    UnauthenticatedError:
+      description: Signed customer or manager session is required
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    RateLimitError:
+      description: Rate limit exceeded
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    DependencyError:
+      description: Retryable dependency failure
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+  schemas:
+    CreateConversationRequest:
+      type: object
+      additionalProperties: false
+      properties: {customer_id: {type: [string, 'null'], maxLength: 200}}
+    SendMessageRequest:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties: {message: {type: string, minLength: 1, maxLength: 8000}}
+    Conversation:
+      type: object
+      required: [conversation_id, workspace_id, customer_id, summary, created_at, expires_at, messages]
+      properties:
+        conversation_id: {type: string}
+        workspace_id: {type: string, const: anonymous-furniture-company}
+        customer_id: {type: [string, 'null']}
+        summary: {type: string}
+        created_at: {type: string, format: date-time}
+        expires_at: {type: string, format: date-time}
+        messages: {type: array, items: {$ref: '#/components/schemas/Message'}}
+    Message:
+      type: object
+      required: [id, role, content, request_id, created_at]
+      properties:
+        id: {type: string}
+        role: {type: string, enum: [user, assistant]}
+        content: {type: string}
+        request_id: {type: [string, 'null']}
+        created_at: {type: string, format: date-time}
+    ComplaintSubmission:
+      type: object
+      additionalProperties: false
+      required: [complaint_id, status, duplicate, created_at]
+      properties:
+        complaint_id: {type: string, pattern: '^cmp_[A-Za-z0-9-]{8,}$'}
+        status: {type: string, enum: [queued, acknowledged, resolved, failed]}
+        duplicate: {type: boolean}
+        created_at: {type: string, format: date-time}
+    Complaint:
+      allOf:
+        - {$ref: '#/components/schemas/ComplaintSubmission'}
+        - type: object
+          required: [workspace_id, conversation_id, complaint_text, category, complaint_type, customer_context, consent_source, version, updated_at]
+          properties:
+            workspace_id: {type: string, const: anonymous-furniture-company}
+            conversation_id: {type: string}
+            customer_id: {type: [string, 'null']}
+            complaint_text: {type: string, minLength: 20, maxLength: 4000}
+            category: {type: string, const: complaint}
+            complaint_type: {type: string}
+            customer_context: {type: string, maxLength: 2000}
+            consent_source: {type: string, enum: [explicit_request, confirmed]}
+            internal_notes: {type: string, maxLength: 4000}
+            version: {type: integer, minimum: 1}
+            updated_at: {type: string, format: date-time}
+    ManagerLoginRequest:
+      type: object
+      additionalProperties: false
+      required: [email, password]
+      properties:
+        email: {type: string, format: email}
+        password: {type: string, minLength: 1, maxLength: 256}
+    ManagerSession:
+      type: object
+      required: [authenticated, email, role]
+      properties:
+        authenticated: {const: true}
+        email: {type: string, format: email}
+        role: {type: string, enum: [manager, admin]}
+    SeedResponse:
+      type: object
+      required: [status, seed]
+      properties:
+        status: {const: ready}
+        seed: {type: string}
+    ComplaintUpdateRequest:
+      type: object
+      additionalProperties: false
+      required: [version]
+      properties:
+        version: {type: integer, minimum: 1}
+        status: {type: string, enum: [queued, acknowledged, resolved, failed]}
+        internal_notes: {type: string, maxLength: 4000, default: ''}
+    FeedbackRequest:
+      type: object
+      additionalProperties: false
+      required: [rating]
+      properties:
+        rating: {type: integer, enum: [-1, 1]}
+        comment: {type: string, maxLength: 1000, default: ''}
+    Feedback:
+      type: object
+      required: [id, message_id, rating, comment, created_at]
+      properties:
+        id: {type: string}
+        message_id: {type: string}
+        rating: {type: integer, enum: [-1, 1]}
+        comment: {type: string}
+        created_at: {type: string, format: date-time}
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: {type: string}
+            message: {type: string}
+            retryable: {type: boolean}
+    LiveResponse:
+      type: object
+      required: [status]
+      properties: {status: {const: live}}
+    ReadyResponse:
+      type: object
+      required: [ready]
+      properties:
+        ready: {type: boolean}
+        database: {type: string, enum: [ready, unavailable]}
+        model_circuit: {type: string, enum: [closed, open, half_open]}
+        rag_circuit: {type: string, enum: [closed, open, half_open]}
+    RuntimeVersion:
+      type: object
+      required: [service, service_version, git_sha, contract_version, model_version, index_version]
+      properties:
+        service: {const: support-runtime}
+        service_version: {type: string}
+        git_sha: {type: string}
+        contract_version: {const: 1.0.0}
+        model_version: {type: string}
+        index_version: {type: string}

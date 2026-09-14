@@ -1,0 +1,11 @@
+{
+  "name": "furniture-support-ai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "contract:test": "node packages/typescript-contracts/tests/contract.test.mjs",
+    "frontend:test": "node apps/customer-chat/tests/smoke.test.mjs && node apps/manager-console/tests/smoke.test.mjs",
+    "typecheck": "node --check packages/typescript-contracts/src/index.ts"
+  }
+}

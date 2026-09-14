@@ -1,0 +1,139 @@
+openapi: 3.1.0
+info:
+  title: Model serving API
+  version: 1.0.0
+  description: OpenAI-compatible inference contract for structured decisions and grounded answers.
+servers:
+  - url: http://model-mock:8000
+paths:
+  /v1/chat/completions:
+    post:
+      operationId: chatCompletions
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/ChatCompletionRequest'}}}
+      responses:
+        '200':
+          description: One non-streaming assistant completion
+          content: {application/json: {schema: {$ref: '#/components/schemas/ChatCompletionResponse'}}}
+        '422': {$ref: '#/components/responses/Validation'}
+        '429':
+          description: Request rate limit exceeded
+          headers:
+            Retry-After: {schema: {type: integer, minimum: 1}}
+          content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+        '503': {$ref: '#/components/responses/Unavailable'}
+  /health/live:
+    get:
+      operationId: modelLiveness
+      responses:
+        '200':
+          description: Process is alive
+          content: {application/json: {schema: {$ref: '#/components/schemas/LiveResponse'}}}
+  /health/ready:
+    get:
+      operationId: modelReadiness
+      responses:
+        '200':
+          description: Provider loaded and readiness probe passed
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReadyResponse'}}}
+        '503':
+          description: Provider is not ready
+          content: {application/json: {schema: {$ref: '#/components/schemas/ReadyResponse'}}}
+  /version:
+    get:
+      operationId: modelVersion
+      responses:
+        '200':
+          description: Serving identity and selected artifact
+          content: {application/json: {schema: {$ref: '#/components/schemas/ModelVersion'}}}
+components:
+  responses:
+    Validation:
+      description: Invalid request or output contract
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    Unavailable:
+      description: Provider is unavailable or output safety guard failed
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+  schemas:
+    ChatCompletionRequest:
+      type: object
+      additionalProperties: false
+      required: [messages]
+      properties:
+        model: {type: string, minLength: 1}
+        messages:
+          type: array
+          minItems: 1
+          maxItems: 32
+          items:
+            type: object
+            additionalProperties: false
+            required: [role, content]
+            properties:
+              role: {type: string, enum: [system, user, assistant, tool]}
+              content: {type: string, maxLength: 32000}
+        max_tokens: {type: integer, minimum: 1, maximum: 1024, default: 1024}
+        temperature: {type: number, minimum: 0, maximum: 2, default: 0.7}
+        top_p: {type: number, exclusiveMinimum: 0, maximum: 1, default: 0.8}
+        top_k: {type: integer, minimum: 1, default: 20}
+        min_p: {type: number, minimum: 0, maximum: 1, default: 0}
+        seed: {type: [integer, 'null']}
+        response_format:
+          type: object
+          additionalProperties: false
+          properties: {type: {type: string, enum: [text, json_object]}}
+    ChatCompletionResponse:
+      type: object
+      additionalProperties: false
+      required: [id, object, created, model, choices, usage, latency_ms]
+      properties:
+        id: {type: string, pattern: '^chatcmpl-[A-Za-z0-9-]+$'}
+        object: {const: chat.completion}
+        created: {type: integer, minimum: 0}
+        model: {type: string}
+        choices:
+          type: array
+          minItems: 1
+          maxItems: 1
+          items:
+            type: object
+            required: [index, message, finish_reason]
+            properties:
+              index: {const: 0}
+              message:
+                type: object
+                required: [role, content]
+                properties: {role: {const: assistant}, content: {type: string}}
+              finish_reason: {type: string, enum: [stop, length]}
+        usage:
+          type: object
+          required: [prompt_tokens, completion_tokens, total_tokens]
+          properties:
+            prompt_tokens: {type: [integer, 'null'], minimum: 0}
+            completion_tokens: {type: [integer, 'null'], minimum: 0}
+            total_tokens: {type: [integer, 'null'], minimum: 0}
+        latency_ms: {type: number, minimum: 0}
+    ErrorResponse:
+      type: object
+      required: [detail]
+      properties: {detail: {type: string}}
+    LiveResponse:
+      type: object
+      required: [status]
+      properties: {status: {const: live}}
+    ReadyResponse:
+      type: object
+      required: [status, provider]
+      properties:
+        status: {enum: [ready, not_ready]}
+        provider: {type: string}
+    ModelVersion:
+      type: object
+      required: [service, git_sha, contract_version, model_version, provider]
+      properties:
+        service: {const: model-serving}
+        git_sha: {type: string}
+        contract_version: {const: 1.0.0}
+        model_version: {type: string}
+        provider: {type: string}

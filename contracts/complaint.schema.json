@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/contracts/complaint.schema.json",
+  "title": "Complaint tool arguments",
+  "description": "Only these model-supplied fields may enter the complaint write path. Runtime adds identity, consent, timestamps and idempotency.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["complaint_text", "category", "complaint_type", "customer_context"],
+  "properties": {
+    "complaint_text": {"type": "string", "minLength": 20, "maxLength": 4000},
+    "category": {"const": "complaint"},
+    "complaint_type": {"$ref": "#/$defs/complaintType"},
+    "customer_context": {"type": "string", "maxLength": 2000}
+  },
+  "$defs": {
+    "complaintType": {"type": "string", "enum": ["waiting_time", "product_quality", "price", "delivery_delay", "delivery_damage", "wrong_item", "missing_item_or_part", "payment_issue", "return_or_refund", "service_quality", "staff_interaction", "availability_or_stock", "other"]}
+  }
+}

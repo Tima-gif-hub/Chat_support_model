@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/contracts/events/runtime-events.schema.json",
+  "title": "Support runtime SSE event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event", "request_id", "sequence", "data"],
+  "properties": {
+    "event": {"type": "string", "enum": ["message.accepted", "status", "token", "citation", "complaint.confirmation_required", "complaint.submitted", "completed", "error"]},
+    "request_id": {"type": "string", "pattern": "^req_[A-Za-z0-9-]{8,}$"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "data": {"type": "object"}
+  },
+  "allOf": [
+    {"if": {"properties": {"event": {"const": "message.accepted"}}}, "then": {"properties": {"data": {"required": ["message_id"]}}}},
+    {"if": {"properties": {"event": {"const": "status"}}}, "then": {"properties": {"data": {"required": ["state"]}}}},
+    {"if": {"properties": {"event": {"const": "token"}}}, "then": {"properties": {"data": {"required": ["text"]}}}},
+    {"if": {"properties": {"event": {"const": "citation"}}}, "then": {"properties": {"data": {"required": ["citation_id", "title", "heading_path", "source_uri", "updated_at"]}}}},
+    {"if": {"properties": {"event": {"const": "complaint.confirmation_required"}}}, "then": {"properties": {"data": {"required": ["draft_id", "complaint_text", "complaint_type"]}}}},
+    {"if": {"properties": {"event": {"const": "complaint.submitted"}}}, "then": {"properties": {"data": {"required": ["complaint_id", "status", "duplicate", "created_at"]}}}},
+    {"if": {"properties": {"event": {"const": "completed"}}}, "then": {"properties": {"data": {"required": ["outcome"]}}}},
+    {"if": {"properties": {"event": {"const": "error"}}}, "then": {"properties": {"data": {"required": ["code", "message", "retryable"]}}}}
+  ]
+}

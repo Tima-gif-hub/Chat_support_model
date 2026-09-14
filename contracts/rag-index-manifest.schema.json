@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/contracts/rag-index-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "index_version", "workspace_id", "embedding_model", "embedding_revision", "embedding_dimensions", "reranker_model", "reranker_revision", "chunking_config_sha256", "source_manifest_sha256", "document_count", "chunk_count", "retrieval_report_sha256", "quality_gate", "status", "created_at", "git_commit"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0"}, "index_version": {"type": "string"}, "workspace_id": {"const": "anonymous-furniture-company"}, "embedding_model": {"const": "BAAI/bge-base-en-v1.5"}, "embedding_revision": {"type": "string", "minLength": 7}, "embedding_dimensions": {"const": 768}, "reranker_model": {"const": "BAAI/bge-reranker-base"}, "reranker_revision": {"type": "string", "minLength": 7}, "chunking_config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "source_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "document_count": {"type": "integer", "minimum": 1}, "chunk_count": {"type": "integer", "minimum": 1}, "retrieval_report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "quality_gate": {"const": "passed"}, "status": {"enum": ["inactive", "active"]}, "created_at": {"type": "string", "format": "date-time"}, "git_commit": {"type": "string"}
+  }
+}

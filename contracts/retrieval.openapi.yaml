@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: RAG platform retrieval API
+  version: 1.0.0
+  description: Private runtime-to-RAG read-only contract with trusted workspace and audience filters.
+servers:
+  - url: http://rag-api:8080
+paths:
+  /v1/retrieve:
+    post:
+      operationId: retrieveEvidence
+      parameters:
+        - {in: header, name: X-Workspace-Id, required: true, schema: {type: string, const: anonymous-furniture-company}}
+        - {in: header, name: X-Audience, required: true, schema: {type: string, const: customer}}
+        - {in: header, name: X-Language, required: true, schema: {type: string, const: en}}
+      requestBody:
+        required: true
+        content: {application/json: {schema: {$ref: '#/components/schemas/RetrieveRequest'}}}
+      responses:
+        '200':
+          description: Ranked evidence or insufficient evidence
+          content: {application/json: {schema: {$ref: '#/components/schemas/RetrievalResponse'}}}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '422': {$ref: '#/components/responses/Validation'}
+  /health/live:
+    get:
+      operationId: ragLiveness
+      responses:
+        '200':
+          description: Process is alive
+          content: {application/json: {schema: {$ref: '#/components/schemas/LiveResponse'}}}
+  /health/ready:
+    get:
+      operationId: ragReadiness
+      responses:
+        '200':
+          description: Active index is available
+          content: {application/json: {schema: {$ref: '#/components/schemas/RagReadyResponse'}}}
+        '503':
+          description: Index is unavailable
+          content: {application/json: {schema: {$ref: '#/components/schemas/RagReadyResponse'}}}
+  /version:
+    get:
+      operationId: ragVersion
+      responses:
+        '200':
+          description: RAG identity and active index version
+          content: {application/json: {schema: {$ref: '#/components/schemas/RagVersion'}}}
+components:
+  responses:
+    Forbidden:
+      description: Trusted retrieval context failed authorization
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+    Validation:
+      description: Query validation failed
+      content: {application/json: {schema: {$ref: '#/components/schemas/ErrorResponse'}}}
+  schemas:
+    RetrieveRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query: {type: string, minLength: 1, maxLength: 2000}
+        as_of: {type: [string, 'null'], format: date-time}
+        max_results: {type: integer, minimum: 1, maximum: 5, default: 5}
+    RetrievalResponse:
+      type: object
+      additionalProperties: false
+      required: [query_id, index_version, status, evidence]
+      properties:
+        query_id: {type: string, pattern: '^qry_[A-Za-z0-9-]{8,}$'}
+        index_version: {type: string, minLength: 1}
+        status: {type: string, enum: [ok, insufficient_evidence]}
+        evidence: {type: array, maxItems: 5, items: {$ref: '#/components/schemas/Evidence'}}
+    Evidence:
+      type: object
+      additionalProperties: false
+      required: [citation_id, document_id, chunk_id, title, heading_path, content, source_uri, dense_score, lexical_score, reranker_score, updated_at]
+      properties:
+        citation_id: {type: string, pattern: '^S[1-5]$'}
+        document_id: {type: string}
+        chunk_id: {type: string}
+        title: {type: string}
+        heading_path: {type: array, items: {type: string}}
+        content: {type: string, minLength: 1}
+        source_uri: {type: string, format: uri-reference}
+        dense_score: {type: number, minimum: 0, maximum: 1}
+        lexical_score: {type: number, minimum: 0, maximum: 1}
+        reranker_score: {type: number, minimum: 0, maximum: 1}
+        updated_at: {type: string, format: date-time}
+    ErrorResponse:
+      type: object
+      required: [detail]
+      properties: {detail: {type: string}}
+    LiveResponse:
+      type: object
+      required: [status]
+      properties: {status: {const: live}}
+    RagReadyResponse:
+      type: object
+      required: [status, index_version]
+      properties:
+        status: {const: ready}
+        index_version: {type: string}
+    RagVersion:
+      type: object
+      required: [service, git_sha, contract_version, index_version]
+      properties:
+        service: {const: rag-platform}
+        git_sha: {type: string}
+        contract_version: {const: 1.0.0}
+        index_version: {type: string}

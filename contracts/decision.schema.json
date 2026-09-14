@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/contracts/decision.schema.json",
+  "title": "Support runtime structured decision",
+  "description": "The JSON-only decision returned by model serving before orchestration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["class", "intent", "expected_action", "rag_required", "safety_class", "clarification_question", "complaint"],
+  "properties": {
+    "class": {"$ref": "#/$defs/businessClass"},
+    "intent": {"$ref": "#/$defs/intent"},
+    "expected_action": {"$ref": "#/$defs/action"},
+    "rag_required": {"type": "boolean"},
+    "safety_class": {"$ref": "#/$defs/safetyClass"},
+    "clarification_question": {"type": ["string", "null"], "maxLength": 500},
+    "complaint": {"anyOf": [{"$ref": "#/$defs/complaintDecision"}, {"type": "null"}]}
+  },
+  "allOf": [
+    {"if": {"properties": {"expected_action": {"const": "complaint_tool"}}}, "then": {"properties": {"class": {"const": "complaint"}, "rag_required": {"const": false}, "complaint": {"$ref": "#/$defs/complaintDecision"}}}},
+    {"if": {"properties": {"expected_action": {"const": "rag_answer"}}}, "then": {"properties": {"rag_required": {"const": true}}}},
+    {"if": {"properties": {"expected_action": {"enum": ["answer", "rag_answer", "clarify", "abstain"]}}}, "then": {"properties": {"complaint": {"type": "null"}}}},
+    {"if": {"properties": {"expected_action": {"const": "complaint_tool"}}}, "then": {"properties": {"clarification_question": {"type": "null"}}}}
+  ],
+  "$defs": {
+    "businessClass": {"type": "string", "enum": ["availability", "catalog", "pricing", "payment", "order", "delivery", "returns", "warranty", "assembly_service", "complaint", "account_privacy", "general_faq", "other_out_of_scope"]},
+    "action": {"type": "string", "enum": ["answer", "rag_answer", "clarify", "complaint_tool", "abstain"]},
+    "safetyClass": {"type": "string", "enum": ["normal", "sensitive", "restricted"]},
+    "intent": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"},
+    "complaintType": {"type": "string", "enum": ["waiting_time", "product_quality", "price", "delivery_delay", "delivery_damage", "wrong_item", "missing_item_or_part", "payment_issue", "return_or_refund", "service_quality", "staff_interaction", "availability_or_stock", "other"]},
+    "complaintDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["complaint_text", "category", "complaint_type", "customer_context", "submission_mode", "consent_evidence"],
+      "properties": {
+        "complaint_text": {"type": "string", "minLength": 20, "maxLength": 4000},
+        "category": {"const": "complaint"},
+        "complaint_type": {"$ref": "#/$defs/complaintType"},
+        "customer_context": {"type": "string", "maxLength": 2000},
+        "submission_mode": {"type": "string", "enum": ["explicit_request", "confirmation_required"]},
+        "consent_evidence": {"type": ["string", "null"], "maxLength": 500}
+      },
+      "allOf": [
+        {"if": {"properties": {"submission_mode": {"const": "explicit_request"}}}, "then": {"required": ["consent_evidence"], "properties": {"consent_evidence": {"type": "string", "minLength": 1}}}},
+        {"if": {"properties": {"submission_mode": {"const": "confirmation_required"}}}, "then": {"properties": {"consent_evidence": {"type": "null"}}}}
+      ]
+    }
+  }
+}

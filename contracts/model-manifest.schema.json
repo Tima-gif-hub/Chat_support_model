@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.test/contracts/model-manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "model_id", "model_version", "base_model", "base_revision", "adapter_uri", "adapter_sha256", "dataset_manifest_sha256", "training_config_sha256", "chat_template_sha256", "evaluation_report_sha256", "license_review", "quality_gate", "created_at", "git_commit"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"const": "1.0"}, "model_id": {"type": "string"}, "model_version": {"type": "string"}, "base_model": {"const": "Qwen/Qwen3-4B"}, "base_revision": {"type": "string", "minLength": 7}, "adapter_uri": {"type": "string"}, "adapter_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "dataset_manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "training_config_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "chat_template_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "evaluation_report_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}, "license_review": {"const": "approved"}, "quality_gate": {"const": "passed"}, "created_at": {"type": "string", "format": "date-time"}, "git_commit": {"type": "string"}
+  }
+}
