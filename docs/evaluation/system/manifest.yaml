@@ -1,0 +1,20 @@
+schema_version: "1.0"
+suite: public-synthetic-300
+owners:
+  - path: components/01-model-preparation/fixtures/evaluation/
+    scenario: decision-behavior
+    cases: 70
+  - path: components/03-rag-platform/fixtures/evaluation/
+    scenario: retrieval-only
+    cases: 60
+  - path: components/04-support-runtime/fixtures/evaluation/
+    scenario: runtime-guardrails-and-complaints
+    cases: 75
+  - path: tests/system/fixtures/grounded-answers.jsonl
+    scenario: grounded-answers-with-citations
+    cases: 80
+  - path: tests/system/fixtures/dependency-failures.jsonl
+    scenario: dependency-failure-behavior
+    cases: 15
+total_cases: 300
+seed: 42
