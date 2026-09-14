@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "payment-methods",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Payment Methods",
+    "document_type": "policy",
+    "source_uri": "kb://policies/payments",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "6bc6ce588ca78303714b4cb3ad89ac70a6471a4f615dd8f0cbf72db8de922d3c"
+  },
+  "content": "# Accepted methods\n\nThe synthetic public demo documents Visa, Mastercard, and major debit cards for online payment. Store purchases may also use approved gift cards. Cash on delivery, bank transfer to an employee, and cryptocurrency are not accepted.\n\n# Payment safety\n\nThe assistant never asks for full card details, security codes, or online-banking credentials. Payment failures and duplicate charges require secure review by a manager. The assistant can explain documented methods but cannot take a payment, retry a transaction, or issue a refund."
+}

@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "delivery-zones",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Delivery Areas and Costs",
+    "document_type": "delivery",
+    "source_uri": "kb://policies/delivery-zones",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "d3228b36b80170d3a39f3b41af3ca315ee1eec3821faba4089cca7afbca30d88"
+  },
+  "content": "# Standard delivery\n\nMainland delivery within zones A and B costs £49 for orders below £1,000 and is included for orders of £1,000 or more. Zone C delivery costs £89 regardless of order value. Charges cover one delivery attempt to an accessible ground-floor entrance.\n\n# Limitations\n\nOffshore islands and addresses outside the published zones require a manager quotation. Narrow roads, parking restrictions, stairs, or restricted access may require an additional service. The assistant cannot schedule a date or promise access suitability."
+}

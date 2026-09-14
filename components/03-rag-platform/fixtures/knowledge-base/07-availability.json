@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "availability-snapshot",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Availability Snapshot",
+    "document_type": "catalog",
+    "source_uri": "kb://availability/2026-09-01",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": "2026-09-01T00:00:00Z",
+    "effective_to": "2026-10-01T00:00:00Z",
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "87b018d02619dcf912049c423b8312920a8f8eb03182fac7efc6a15d1474ca34"
+  },
+  "content": "# Valid September snapshot\n\nThe Alder sofa in oat is listed as available for standard dispatch. Slate is listed with an estimated three-week replenishment window. Forest green is made to order with an estimated six-to-eight-week production range. The Rowan king bed in natural oak is listed as available.\n\nAvailability is a dated informational snapshot and may change before checkout. It is not a reservation or stock promise. Customers should confirm current availability with a manager before making time-sensitive plans."
+}

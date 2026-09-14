@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "synthetic_data": true,
+  "conversations": [
+    {
+      "fixture_id": "conversation-catalog-question",
+      "messages": [{"role": "user", "content": "What material is the Alder dining table made from?"}]
+    }
+  ],
+  "complaints": [
+    {
+      "fixture_id": "queued-delivery-delay",
+      "complaint_text": "My synthetic delivery is five days late and I need an update.",
+      "complaint_type": "delivery_delay",
+      "customer_context": "Synthetic fixture; no order or customer record.",
+      "consent_source": "confirmed",
+      "status": "queued"
+    }
+  ]
+}

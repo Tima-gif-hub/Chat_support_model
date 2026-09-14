@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "standard-pricing",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Standard Prices",
+    "document_type": "pricing",
+    "source_uri": "kb://pricing/standard",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": "2026-09-01T00:00:00Z",
+    "effective_to": "2027-01-01T00:00:00Z",
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "84d19ec3a2806077a4d53d5fea34201555ee8a6ee98530d49e761c9cee20ca65"
+  },
+  "content": "# Listed prices\n\nThe Alder sofa is listed at £1,249, and its ottoman is £349. The Rowan king bed frame is £899 without a mattress. The Ashford extending table is £1,099, and Ashford chairs are £169 each. Prices include VAT for customer purchases.\n\nThese are synthetic public-demo prices valid during the stated period. Delivery, assembly, and optional accessories are separate where applicable. The knowledge base provides information only and cannot alter, negotiate, or guarantee a checkout price."
+}

@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "defects-and-parts",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Defects and Replacement Parts",
+    "document_type": "warranty",
+    "source_uri": "kb://policies/defects-parts",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "30f2a1beb96db89689111d3ec17e991d808c13372b8d7319304017d6ad953e19"
+  },
+  "content": "# Reporting a fault\n\nDescribe the affected item, when the problem began, and whether use is unsafe. Stop using furniture that is unstable, has exposed sharp parts, or shows structural failure. Photographs of the whole item, the fault, and the product label help review.\n\n# Parts\n\nCommon hardware such as bolts, shelf pins, and handles may be available as replacement parts. Compatibility must be checked against the product and batch. A manager decides the remedy and confirms whether a part, repair, replacement, or another response is appropriate."
+}

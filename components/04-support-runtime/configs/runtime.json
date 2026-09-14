@@ -1,0 +1,13 @@
+{
+  "workspace_id": "anonymous-furniture-company",
+  "message_character_limit": 8000,
+  "recent_turn_limit": 8,
+  "history_token_limit": 2400,
+  "conversation_ttl_hours": 24,
+  "per_ip_per_minute": 30,
+  "per_conversation_per_minute": 10,
+  "decision_timeout_seconds": 8.0,
+  "answer_timeout_seconds": 30.0,
+  "rag_timeout_seconds": 1.5,
+  "complaint_timeout_seconds": 2.0
+}

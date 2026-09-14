@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "returns-policy",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Returns Policy",
+    "document_type": "returns",
+    "source_uri": "kb://policies/returns",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "a2919130251fff106e26637f656c55b62c41d122d2f8540d127cba8bbca7d595"
+  },
+  "content": "# Change-of-mind returns\n\nUnused standard items may be requested for return within 30 calendar days of delivery. Items must be complete, unassembled where applicable, and in resalable condition. Original delivery charges are not refunded unless required by law or the item is faulty.\n\n# Exclusions\n\nMade-to-order items, cut fabrics, and personalized finishes are not eligible for change-of-mind return. This exclusion does not remove rights for faulty goods. A manager confirms eligibility and collection charges before any return is accepted."
+}

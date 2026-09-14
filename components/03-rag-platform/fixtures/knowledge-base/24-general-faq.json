@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "general-faq",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "General Customer FAQ",
+    "document_type": "faq",
+    "source_uri": "kb://faq/general",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "d8fd917e963312676604a1b0ad57956ed1b4e6584f8fe64f0e1b2c3402ccb87d"
+  },
+  "content": "# Samples and product advice\n\nSelected upholstery swatches may be requested through a manager where available. Photographs and screen colors can vary, so a sample is preferable for color-sensitive decisions. Measurements should be checked against the product page and the intended access route.\n\n# Scope\n\nThe assistant offers concise furniture information supported by this knowledge base. It does not provide interior-design certification, structural engineering advice, legal advice, or emergency services. When reliable company evidence is missing or expired, it states that the information cannot be verified."
+}

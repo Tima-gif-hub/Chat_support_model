@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "delivery-receipt",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Receiving a Delivery",
+    "document_type": "delivery",
+    "source_uri": "kb://policies/delivery-receipt",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "22056ec11e6790c23e50a87047f19f646d0ba7830762a07da07f40199081bdc5"
+  },
+  "content": "# At the door\n\nAn adult aged 18 or over must be present. Customers should check the number of packages and inspect visible packaging before signing. If packaging is visibly damaged, note it with the carrier and photograph the package before opening when safe.\n\n# After delivery\n\nReport missing packages, wrong items, or visible transit damage promptly through customer support. Keep packaging while the issue is reviewed. The assistant can explain the process but cannot authorize a replacement, refund, or redelivery."
+}

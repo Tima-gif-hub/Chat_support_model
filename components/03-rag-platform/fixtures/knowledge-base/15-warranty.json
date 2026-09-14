@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "warranty-policy",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Furniture Warranty",
+    "document_type": "warranty",
+    "source_uri": "kb://policies/warranty",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "0dee1a656f0df1e6a0e2bb4d24b93a2413e16f9f05a199dab51cfd2723c7cced"
+  },
+  "content": "# Coverage\n\nFurniture frames carry a five-year limited warranty against manufacturing defects. Upholstery, mechanisms, and hardware carry a two-year limited warranty. Outdoor cushion covers carry a one-year limited warranty. Coverage begins on delivery to the original purchaser.\n\n# Exclusions\n\nNormal wear, accidental damage, misuse, commercial use, unauthorized repair, and failure to follow care instructions are excluded. Proof of purchase and photographs may be requested. A manager assesses each claim; the assistant cannot promise repair, replacement, or refund."
+}

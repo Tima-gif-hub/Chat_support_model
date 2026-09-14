@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "exchange-policy",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Exchange Policy",
+    "document_type": "returns",
+    "source_uri": "kb://policies/exchanges",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "b6f698d04fbbbd870d9d57e82df311171befa14a121d84ec72784dbc8b16db81"
+  },
+  "content": "# Exchanges\n\nA standard unused item may be considered for exchange within the 30-day return window. The replacement item is priced at the amount current when the exchange is approved. Any price difference and collection or redelivery charge is confirmed by a manager.\n\nAn exchange is not reserved until approval. Made-to-order and personalized items cannot be exchanged for preference reasons. Faulty, damaged, wrong, or incomplete items follow the issue-resolution process instead of the change-of-mind exchange process."
+}

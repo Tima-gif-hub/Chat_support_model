@@ -1,0 +1,17 @@
+groups:
+  - name: rag-platform
+    rules:
+      - alert: RagInsufficientEvidenceRateHigh
+        expr: rate(rag_insufficient_evidence_total[10m]) / clamp_min(rate(rag_retrieval_requests_total[10m]), 0.001) > 0.25
+        for: 10m
+        labels: {severity: warning, owner: rag-platform}
+        annotations:
+          summary: RAG is returning insufficient evidence frequently
+          runbook: components/03-rag-platform/docs/runbooks/retrieval-regression.md
+      - alert: RagRetrievalSlow
+        expr: histogram_quantile(0.95, rate(rag_retrieval_duration_seconds_bucket[5m])) > 0.8
+        for: 5m
+        labels: {severity: warning, owner: rag-platform}
+        annotations:
+          summary: p95 RAG retrieval exceeds 800ms
+          runbook: components/03-rag-platform/docs/runbooks/retrieval-regression.md

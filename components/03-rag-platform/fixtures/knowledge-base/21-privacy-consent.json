@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "privacy-consent",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Privacy and Consent",
+    "document_type": "policy",
+    "source_uri": "kb://policies/privacy",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "c5dad094b74faf7bd37affb5460c4509da70e196b83045d43b820b12421928fb"
+  },
+  "content": "# Customer information\n\nCustomer contact and order information is used to provide requested service, maintain records, prevent misuse, and meet legal obligations. Access is limited to authorized roles. The public demo uses synthetic records and anonymous signed sessions.\n\n# Choices\n\nCustomers may ask a manager how to access, correct, or delete eligible personal information. Some records may need to be retained for legal or fraud-prevention reasons. Complaint text is submitted only after explicit consent or an unambiguous direct request. Never include payment credentials in a complaint."
+}

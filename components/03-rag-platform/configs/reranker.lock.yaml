@@ -1,0 +1,4 @@
+model: BAAI/bge-reranker-base
+revision: 2cfc18c9415c912f9d8155881c133215df768a70
+score_transform: sigmoid
+local_adapter: deterministic-overlap-cross-features-v1

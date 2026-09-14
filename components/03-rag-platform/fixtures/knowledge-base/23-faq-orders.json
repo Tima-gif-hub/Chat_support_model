@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "order-information-faq",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Order Information FAQ",
+    "document_type": "faq",
+    "source_uri": "kb://faq/orders",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "5f88b95ea3caa9dd9d7142c3d6c6141c17fd81cc34b6032e10106500f604921d"
+  },
+  "content": "# Order questions\n\nThe assistant can explain general delivery, return, warranty, payment, and assembly policies. It cannot view a customer's live order, edit delivery instructions, cancel an order, reserve inventory, or confirm a transaction.\n\nFor order-specific help, provide the order reference to a manager through the approved support flow. Do not post addresses, payment details, or account credentials in general chat. A request for status is informational until a manager accesses the relevant order system."
+}

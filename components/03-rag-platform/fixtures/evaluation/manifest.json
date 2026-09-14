@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "fixture_version": "rag-retrieval-v1",
+  "case_count": 60,
+  "case_file": "retrieval-golden-v1.jsonl",
+  "owner": "components/03-rag-platform"
+}

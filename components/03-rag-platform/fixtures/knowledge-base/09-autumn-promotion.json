@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "autumn-promotion",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Autumn Promotion",
+    "document_type": "pricing",
+    "source_uri": "kb://pricing/autumn-promotion",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": "2026-09-10T00:00:00Z",
+    "effective_to": "2026-10-06T00:00:00Z",
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "8fcecc3159593227ed6d0ae179dce1d453f1a8712925138a1926e0f128b690b7"
+  },
+  "content": "# Promotion terms\n\nFrom 10 September through 5 October 2026, the synthetic demo offers 10% off the Alder sofa when purchased with the matching ottoman. The reduction applies to the furniture items only and does not reduce delivery or assembly charges.\n\nThe offer cannot be combined with another promotion, employee pricing, or a price match. Eligibility is checked at checkout during the validity period. The assistant may explain these terms but cannot apply a discount or extend the offer."
+}

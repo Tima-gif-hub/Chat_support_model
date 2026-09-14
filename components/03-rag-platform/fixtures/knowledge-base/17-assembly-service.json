@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "assembly-service",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Assembly Service",
+    "document_type": "assembly",
+    "source_uri": "kb://services/assembly",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "7a23f87134c8c1749097648a99a9502bc8d62c321fdbd3e899c2b8725d811a26"
+  },
+  "content": "# Availability\n\nPaid assembly is available for selected indoor furniture in delivery zones A and B. The product page identifies eligible items. Assembly must be requested before dispatch and is performed during the arranged delivery visit when confirmed.\n\n# Customer preparation\n\nThe room and access route must be clear, and wall-fixing locations must be accessible. Installers do not move existing furniture, modify products, connect utilities, or drill into unknown services. The assistant may describe the service but cannot add it to an order or schedule an appointment."
+}

@@ -1,0 +1,19 @@
+[rag]
+embedding_dimensions = 768
+embedding_max_tokens = 512
+dense_candidates = 20
+lexical_candidates = 20
+rerank_candidates = 12
+max_results = 5
+max_evidence_tokens = 2400
+rrf_k = 60
+reranker_threshold = 0.35
+target_tokens = 420
+maximum_tokens = 512
+minimum_tokens = 80
+overlap_tokens = 64
+separator_order = ["heading", "paragraph", "sentence"]
+preserve_title = true
+preserve_heading_path = true
+preserve_table_rows = true
+hnsw_ef_search = 100

@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "delivery-times",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Delivery Time Ranges",
+    "document_type": "delivery",
+    "source_uri": "kb://policies/delivery-times",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "4d363fe72836222dfbc21e32f00d6a34a06b2a56955d3486305ede5a931c5b20"
+  },
+  "content": "# Dispatch and transit\n\nIn-stock small items normally dispatch within two business days. In-stock furniture normally dispatches within five business days. After dispatch, zone A transit is usually two to four business days, zone B is three to six, and zone C is five to nine.\n\nThese are ranges rather than guaranteed arrival dates. Made-to-order production time is shown separately on the product record. Severe weather, access restrictions, and carrier disruption may change timing. Order-specific tracking must be handled by a manager."
+}

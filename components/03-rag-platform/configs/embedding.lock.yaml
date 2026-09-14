@@ -1,0 +1,6 @@
+model: BAAI/bge-base-en-v1.5
+revision: dd9f42942e0729b6c53632f3c23b0e801f236569
+dimensions: 768
+maximum_tokens: 512
+local_adapter: deterministic-feature-hash-v1
+note: The local CPU adapter preserves the vector contract without downloading model weights.

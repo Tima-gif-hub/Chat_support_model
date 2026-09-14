@@ -1,0 +1,12 @@
+{
+  "title": "RAG platform",
+  "tags": ["rag", "owner:rag-platform"],
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {"type": "stat", "title": "Active index", "targets": [{"expr": "rag_index_info"}]},
+    {"type": "timeseries", "title": "Retrieval p95", "targets": [{"expr": "histogram_quantile(0.95, rate(rag_retrieval_duration_seconds_bucket[5m]))"}]},
+    {"type": "timeseries", "title": "Insufficient evidence", "targets": [{"expr": "rate(rag_insufficient_evidence_total[5m])"}]},
+    {"type": "timeseries", "title": "Candidate counts", "targets": [{"expr": "rate(rag_dense_candidates_total[5m])", "legendFormat": "dense"}, {"expr": "rate(rag_lexical_candidates_total[5m])", "legendFormat": "lexical"}]}
+  ]
+}

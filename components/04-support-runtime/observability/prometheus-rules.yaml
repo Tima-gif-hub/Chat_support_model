@@ -1,0 +1,20 @@
+groups:
+  - name: support-runtime
+    rules:
+      - alert: SupportRuntimeNotReady
+        expr: support_runtime_ready == 0
+        for: 2m
+        labels: {severity: critical, owner: support-runtime}
+        annotations:
+          summary: Support runtime is not ready
+      - alert: SupportRuntimeComplaintFailures
+        expr: increase(support_runtime_complaints_total{outcome="failed"}[10m]) > 0
+        labels: {severity: critical, owner: support-runtime}
+        annotations:
+          summary: At least one complaint transaction failed
+      - alert: SupportRuntimeCitationFailureRate
+        expr: rate(support_runtime_citation_failures_total[10m]) > 0.01
+        for: 5m
+        labels: {severity: warning, owner: support-runtime}
+        annotations:
+          summary: Grounded answers are failing citation validation

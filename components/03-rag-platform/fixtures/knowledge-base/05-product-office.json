@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "office-collection",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Home Office Furniture",
+    "document_type": "catalog",
+    "source_uri": "kb://catalog/home-office",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "963075c83708afc88c71e20bdd0a0a36d52d1f7215744e3199f197be378d9660"
+  },
+  "content": "# Desks\n\nThe Lark desk is 120 cm wide, 60 cm deep, and 74 cm high. It has a powder-coated steel frame and a laminated birch worktop. The cable opening is 60 mm in diameter. Maximum evenly distributed load is 50 kg.\n\n# Care\n\nClean with a slightly damp microfiber cloth. Abrasive cleaners can dull the laminate. The optional Lark drawer unit fits beneath either side of the desk and requires 42 cm of clear width."
+}

@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "bedroom-collection",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Bedroom Furniture",
+    "document_type": "catalog",
+    "source_uri": "kb://catalog/bedroom",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "32ff79379b885c27009cdec0d30433c94daf0831499eecd9b39ace2ec60217ec"
+  },
+  "content": "# Beds\n\nThe Rowan platform bed is made from FSC-certified oak veneer over engineered wood. Double, king, and super king frame sizes are offered. The king frame measures 166 cm wide by 215 cm long, with a 34 cm headboard depth. Mattresses are sold separately.\n\n# Care and compatibility\n\nUse a damp, soft cloth and dry immediately. Do not use silicone polish. The frame accepts standard UK mattress dimensions and requires the supplied center support rail. Under-bed clearance is 18 cm."
+}

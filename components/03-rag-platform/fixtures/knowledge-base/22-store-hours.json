@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "document_id": "store-hours",
+    "workspace_id": "anonymous-furniture-company",
+    "title": "Customer Support Hours",
+    "document_type": "faq",
+    "source_uri": "kb://faq/support-hours",
+    "language": "en",
+    "audience": "customer",
+    "effective_from": null,
+    "effective_to": null,
+    "updated_at": "2026-09-01T00:00:00Z",
+    "content_sha256": "1abcb22b1079c11f991b8e81d631672deaa8ed86416ac04dfd4392e508e92808"
+  },
+  "content": "# Support hours\n\nManagers normally review customer-support requests Monday through Friday from 09:00 to 17:00 local time, excluding public holidays. The automated assistant can provide documented information outside those hours.\n\nMessages submitted after hours remain queued until the next support period. These hours do not guarantee a response deadline. Urgent safety concerns involving unstable or damaged furniture should include clear details and should not involve continued use of the item while awaiting review."
+}
